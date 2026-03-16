@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8">
+	<title>Q</title>
+	<link rel="stylesheet" href="diary.css">
+</head>
+<body>
+
+	<div id="plusoverlay" class="plusoverlay monet hidden"></div>
+	<div id="pluspopup" class="pluspopup hidden">
+		<h2>Nhập dữ liệu</h2>
+		<label>Date: <input type="date" id="tcalendar"></label>
+		<label>Number: <input type="number" id="tnum"></label>
+		<label>Title: <input type="text" id="ttitle"></label>
+		<label>QA (mỗi dòng: câu hỏi => câu trả lời trạng thái):</label>
+		<textarea id="qabox" rows="5"></textarea>
+		<label>Details:</label>
+		<textarea id="tdetails" rows="5"></textarea>
+
+		<button id="apply" style="margin-top:2vh;">Apply</button>
+
+		<h2>Kết quả</h2>
+		<textarea id="tresult" rows="10"></textarea>
+		<button id="closeplus" style="margin-top:2vh;">close</button>
+	</div>
+
+	<div id="popup-overlay" class="plusoverlay monet hidden">
+		<div id="popup-box">
+			<p id="popup-message"></p>
+			<img id="popupImg" src="" alt="">
+			<button onclick="closePopup()">-</button>
+		</div>
+	</div>
+	<input type="date" id="calendar" class="monet">
+	<div id="calendar-overlay">
+		<div id="calendar-popup">
+			<div class="calendar-header">
+				<button id="prev-month">«</button>
+				<h3 id="month-label"></h3>
+				<button id="next-month">»</button>
+			</div>
+			<div id="calendar-grid" class="calendar-grid"></div>
+			<button class="close-btn" onclick="closeCalendar()">Đóng</button>
+		</div>
+	</div>
+	<div class="horizontal">
+		<div id="temp-horizontal">
+			<div class="quote-box monet horizontal-section">
+				<div>
+					<p id="quote"></p>
+					<div class="author" id="author"></div>
+				</div>
+				<button id="plus">+</button>
+			</div>
+			<div class="spreadinfo horizontal-section">
+				<select id="eventSelect" class="monet"></select>
+				<div id="qinfo"></div>
+			</div>
+			<div id="result" class="horizontal-section"></div>
+		</div>
+	</div>
+	<div class="pagination monet" id="horizontal-pagination"></div>
+
+<script src="diarydata.js"></script>
+<script src="quotes.js"></script>
+<script src="shortcardinfo.js"></script>
+<script> //function script
+
+	const calendar = document.getElementById("calendar");
+	const eventSelect = document.getElementById("eventSelect");
+	const result = document.getElementById("result");
+	const today = new Date();
+	const yyyy = today.getFullYear();
+	const mm = String(today.getMonth() + 1).padStart(2, '0'); // tháng từ 0-11
+	const dd = String(today.getDate()).padStart(2, '0');
+	const formatted = `${yyyy}-${mm}-${dd}`;
+	const h = Horizontal(1);
+	
+
+	
+	function clearnav(){
+		Horizontal(1);
+		document.getElementById("result").innerHTML = "";
+		document.getElementById("qinfo").innerHTML = "";
+		document.getElementById("eventSelect").innerHTML = "";
+
+	}
+	// Horizontal (3 trang)
+	function Horizontal(totalPagesInit = 1) {
+		const tempH = document.getElementById("temp-horizontal");
+		const paginationH = document.getElementById("horizontal-pagination");
+		let totalPagesH = totalPagesInit;
+		let currentPageH = 0;
+
+		function goToPageH(pageIndex) {
+			currentPageH = pageIndex;
+			tempH.style.left = `-${pageIndex*100}%`;
+			renderButtonsH();
+		}
+
+		function renderButtonsH() {
+			paginationH.innerHTML = "";
+
+			// prev-page
+			const prevPage = document.createElement("button");
+			prevPage.textContent = "«";
+			prevPage.disabled = currentPageH===0;
+			prevPage.onclick = () => { if(currentPageH>0) goToPageH(currentPageH-1); };
+			paginationH.appendChild(prevPage);
+
+			// số trang
+			for (let i=0;i<totalPagesH;i++) {
+				const btn=document.createElement("button");
+				btn.textContent=`${i+1}/${totalPagesH}`;
+				btn.classList.toggle("active",i===currentPageH);
+				btn.onclick=()=>goToPageH(i);
+				paginationH.appendChild(btn);
+			}
+
+			// next-page
+			const nextPage = document.createElement("button");
+			nextPage.textContent = "»";
+			nextPage.disabled = currentPageH===totalPagesH-1;
+			nextPage.onclick = () => { if(currentPageH<totalPagesH-1) goToPageH(currentPageH+1); };
+			paginationH.appendChild(nextPage);
+		}
+
+		// khởi tạo
+		renderButtonsH();
+
+		// expose ra ngoài để dùng
+		return {
+			goToPageH,
+			renderButtonsH,
+			setTotalPages: (n) => { totalPagesH = n; renderButtonsH(); }
+		};
+	}
+
+	function setupVertical(totalPagesV) {
+		const tempV = document.getElementById("temp-vertical");
+		const paginationV = document.getElementById("vertical-pagination");
+		let currentPageV = 0;
+		let startPageV = 0;
+		function goToPageV(pageIndex) {
+			currentPageV = pageIndex;
+			tempV.style.top = `-${pageIndex*100}%`;			// đảm bảo trang hiện tại luôn nằm trong nhóm hiển thị
+
+			const qboxDivs = document.querySelectorAll(".qbox div");
+
+			// bỏ highlight ở tất cả div
+			qboxDivs.forEach(el => el.classList.remove("highlight"));
+
+			// thêm highlight vào div thứ pageIndex+1
+				if (qboxDivs[pageIndex]) {
+				qboxDivs[pageIndex].classList.add("highlight");
+				qboxDivs[pageIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+			}	
+			if (totalPagesV > 3) {
+				if (pageIndex < startPageV) {
+					startPageV = pageIndex;
+				} else if (pageIndex >= startPageV + 3) {
+					startPageV = pageIndex - 2;
+				}
+			}
+			renderButtonsV();
+		}
+		function renderButtonsV() {
+			paginationV.innerHTML = "";
+			if (totalPagesV > 3) {	// prev-group
+				const prevGroup = document.createElement("button");
+				prevGroup.textContent = "↑↑";
+				prevGroup.disabled = startPageV===0;
+				prevGroup.onclick = () => {
+					startPageV=Math.max(0,startPageV-3);
+					renderButtonsV();
+				};
+				paginationV.appendChild(prevGroup);
+			}	// prev-page
+			const prevPage = document.createElement("button");
+			prevPage.textContent = "↑";
+			prevPage.disabled = currentPageV===0;
+			prevPage.onclick = () => {
+				if(currentPageV>0) goToPageV(currentPageV-1);
+			};
+			paginationV.appendChild(prevPage);	// số trang
+			const maxShow = totalPagesV > 3 ? 3 : totalPagesV;
+			for (let i=0;i<maxShow;i++) {
+				const pageIndex = startPageV+i;
+				if (pageIndex<totalPagesV) {
+					const btn=document.createElement("button");
+					btn.textContent=`${pageIndex+1}/${totalPagesV}`;
+					btn.classList.toggle("active",pageIndex===currentPageV);
+					btn.onclick=()=>goToPageV(pageIndex);
+					paginationV.appendChild(btn);
+				}
+			}		// next-page
+			const nextPage = document.createElement("button");
+			nextPage.textContent = "↓";
+			nextPage.disabled = currentPageV===totalPagesV-1;
+			nextPage.onclick = () => {
+				if(currentPageV<totalPagesV-1) goToPageV(currentPageV+1);
+			};
+			paginationV.appendChild(nextPage);
+			if (totalPagesV > 3) {		// next-group
+				const nextGroup = document.createElement("button");
+				nextGroup.textContent = "↓↓";
+				nextGroup.disabled = startPageV+3>=totalPagesV;
+				nextGroup.onclick = () => {
+					startPageV=Math.min(totalPagesV-3,startPageV+3);
+					renderButtonsV();
+				};
+				paginationV.appendChild(nextGroup);
+			}
+		}	renderButtonsV();
+	}
+	document.getElementById("calendar").value = formatted;
+	// Khi chọn ngày
+	function handleDateChange(selectedDate) {
+		const filtered = data.filter(item => item.date === selectedDate);
+
+		applyRandomTheme();
+		const q = getRandomQuote();
+		document.getElementById("quote").textContent = q.quote;
+		document.getElementById("author").textContent = q.author;
+		document.getElementById("temp-horizontal").style.left = "0";
+
+		clearnav()
+		if (filtered.length > 0) {
+			if (filtered.length > 0) {
+				h.setTotalPages(3);
+				h.goToPageH(0);
+
+				if (filtered.length === 1) {
+					// Nếu chỉ có 1 data thì chọn luôn
+					const chosen = filtered[0];
+					document.getElementById("result").innerHTML = chosen.details;
+					document.getElementById("eventSelect").innerHTML = `<option disabled selected>${chosen.title}</option>`;
+
+					// Render Q&A và card như khi chọn sự kiện
+					const qinfo = document.getElementById("qinfo");
+					let html = ``;
+
+					html += `<div class="qbox">`;
+					chosen.qa.forEach(item => {
+						const card = cardInfo[item.a];
+						if (card) {
+							html += `
+								<div class="${item.s || ""}">
+								${item.q} => ${card.cardname} ${item.s}
+								</div>
+							`;
+						}
+					});
+					html += `</div>`;
+
+					html += `<div class="cardwrapper"id="vertical"><div id="temp-vertical">`;
+					chosen.qa.forEach(item => {
+						const card = cardInfo[item.a];
+						if (card) {
+							html += `
+								<div class="cardbox ${card.class} ${item.s}">
+									<img src="${card.cardimg}" alt="${card.cardname}">
+								</div>
+							`;
+						}
+					});
+					html += `</div><div class="pagination vertical monet" id="vertical-pagination"></div></div>`;
+
+					qinfo.innerHTML = html;
+					const count = document.querySelectorAll("#temp-vertical .cardbox").length;
+					setupVertical(count);
+					applyRandomTheme();
+
+				} else {
+					// Nếu nhiều hơn 1 thì giữ logic select như cũ
+					const defaultOpt = document.createElement("option");
+					defaultOpt.textContent = `Chọn trong ${filtered.length} phép trải`;
+					defaultOpt.disabled = true;
+					defaultOpt.selected = true;
+					eventSelect.appendChild(defaultOpt);
+
+					filtered.sort((a, b) => a.key.localeCompare(b.key));
+					filtered.forEach(item => {
+						const opt = document.createElement("option");
+						opt.value = item.key;
+						opt.textContent = item.title;
+						eventSelect.appendChild(opt);
+					});
+
+					eventSelect.onchange = () => {
+						const chosen = filtered.find(ev => ev.key === eventSelect.value);
+						document.getElementById("result").innerHTML = chosen.details;
+					};
+				}
+			}
+
+
+		} else {
+			h.setTotalPages(1);
+		}
+	}
+
+// vẫn giữ listener cho input
+	calendar.addEventListener("change", () => {
+		handleDateChange(calendar.value);
+	});
+
+	// Khi chọn sự kiện trong select
+	eventSelect.addEventListener("change", () => {
+		const selectedKey = eventSelect.value;
+		const found = data.find(item => item.key === selectedKey);
+		result.innerHTML = found.details;
+		if (found) {
+			const qinfo = document.getElementById("qinfo");
+			// Title
+			let html = ``;
+
+			// Q&A box
+			html += `<div class="qbox">`;
+			found.qa.forEach(item => {
+			const card = cardInfo[item.a];
+			if (card) {
+				html += `
+					<div class="${item.s || ""}">
+					${item.q} => ${card.cardname} ${item.s}
+					</div>
+					`;
+				}
+			});
+			html += `</div>`;
+
+			// Card wrapper
+			html += `<div class="cardwrapper"id="vertical"><div id="temp-vertical">`;
+			found.qa.forEach(item => {
+				const card = cardInfo[item.a];
+				if (card) {
+				html += `
+					<div class="cardbox ${card.class} ${item.s}">
+						<img src="${card.cardimg}" alt="${card.cardname}">
+					</div>
+					`;
+				}
+			});
+			html += `</div><div class="pagination vertical monet" id="vertical-pagination"></div></div>`;
+
+			// Đổ ra result
+			qinfo.innerHTML = html;
+			const count = document.querySelectorAll("#temp-vertical .cardbox").length;
+			setupVertical(count);
+			applyRandomTheme();
+			const qbox = document.querySelector(".qbox");
+			if (qbox) {
+				const firstDiv = qbox.querySelector("div");
+				if (firstDiv) {
+					firstDiv.classList.add("highlight");
+				}
+			}
+			attachCardboxEvents();
+		}
+	});
+
+//Popup
+	function showPopup(link, side) {
+		const popupImg = document.getElementById("popupImg");
+		popupImg.src = link;
+			if (side.toLowerCase() === "reversed") {
+				popupImg.style.transform = "rotate(180deg)";
+			} else {
+				popupImg.style.transform = "none";
+			}
+		document.getElementById("popup-overlay").style.display = "block";
+	}
+
+	function closePopup() {
+		const popupImg = document.getElementById("popupImg");
+		popupImg.src = "";
+		document.getElementById("popup-overlay").style.display = "none";
+		popupImg.style.transform = "none";
+	}
+	
+	function attachCardboxEvents() {
+		document.querySelectorAll(".cardbox").forEach(card => {
+			card.addEventListener("click", () => handleCardboxClick(card));
+		});
+	}
+
+	function handleCardboxClick(card) {
+		const img = card.querySelector("img");
+		const src = img.getAttribute("src");
+
+		// lấy class thứ 3 trong cardbox
+		const classes = card.classList;
+		const side = classes.length >= 3 ? classes[2] : "";
+
+		showPopup(src, side);
+	}
+
+	// gọi hàm này sau khi DOM load
+	attachCardboxEvents();
+	
+// Mảng màu pastel
+// Hàm tạo gradient ngẫu nhiên
+	function randomPastel() {
+		const hue = Math.floor(Math.random() * 360); // vòng màu
+		const saturation = 40 + Math.random() * 20;	// 40–60%
+		const lightness = 70 + Math.random() * 20;	 // 70–90%
+		return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+	}
+
+	function randomGradient() {
+		const c1 = randomPastel();
+		const c2 = randomPastel();
+		return `linear-gradient(135deg, ${c1}, ${c2})`;
+	}
+
+
+// Hàm áp dụng gradient cho tất cả .monet
+	function applyRandomTheme() {
+		const randomTheme = randomGradient();
+		document.querySelectorAll(".monet").forEach(el => {
+			el.style.background = randomTheme;
+		});
+		document.querySelectorAll(".horizontal-section").forEach(el => {
+			el.style.borderImage = randomTheme + " 1"; 
+			el.style.borderStyle = "solid";
+			el.style.borderWidth = "1px"; // tuỳ chỉnh độ dày
+		});
+
+		const monet = document.querySelector(".monet");
+		const bg = getComputedStyle(monet).backgroundImage;
+		const matches = bg.match(/hsla?\([^)]+\)|rgba?\([^)]+\)|#[0-9a-fA-F]{3,6}/g);
+		if (matches && matches.length > 0) {
+			const firstColor = matches[0];
+			document.documentElement.style.setProperty("--monet-color", firstColor);
+		}
+
+	}
+
+	//Quotes
+	function getRandomQuote() {
+		const index = Math.floor(Math.random() * quotes.length);
+		return quotes[index];
+	}
+
+	//Calendar
+
+	const events = data.map(item => item.date);
+	let currentYear, currentMonth;
+function renderCalendar(year, month) {
+	currentYear = year;
+	currentMonth = month;
+	const grid = document.getElementById("calendar-grid");
+	grid.innerHTML = "";
+
+	const monthNames = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+	document.getElementById("month-label").textContent = `${monthNames[month]} ${year}`;
+
+	// thêm header thứ ngay trong grid
+	const dayNames = ["CN","T2","T3","T4","T5","T6","T7"];
+	dayNames.forEach((d, idx) => {
+		const el = document.createElement("div");
+		el.className = "day-name";
+		el.textContent = d;
+		if (idx === 0) { // CN
+			el.style.color = "red";
+			el.style.fontWeight = "bold";
+		}
+		if (idx === 6) { // T7
+			el.style.color = "blue";
+		}
+		grid.appendChild(el);
+	});
+
+	const firstDay = new Date(year, month, 1);
+	const lastDay = new Date(year, month+1, 0);
+	const today = new Date();
+	const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+
+
+	// thêm ô trống trước ngày đầu tiên
+	for (let i=0; i<firstDay.getDay(); i++) {
+		grid.appendChild(document.createElement("div"));
+	}
+
+	// render ngày
+	for (let d=1; d<=lastDay.getDate(); d++) {
+		const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+		const dayEl = document.createElement("div");
+		dayEl.className = "day";
+		dayEl.textContent = d;
+
+		if (dateStr === todayStr) dayEl.classList.add("today");
+	if (events.includes(dateStr)) {
+		// tìm các item trong data có cùng ngày và title = "Daily"
+		const matched = data.filter(item => item.date === dateStr && item.title === "Daily");
+		
+		if (matched.length > 0) {
+			matched.forEach(ev => {
+				ev.qa.forEach(qitem => {
+					const card = cardInfo[qitem.a];
+					if (card && card.class) {
+						dayEl.classList.add(card.class);
+					}
+				});
+			});
+		} else {
+			// nếu không có Daily thì thêm class monet như cũ
+			dayEl.classList.add("monet");
+		}
+		const countEvents = data.filter(item => item.date === dateStr).length; 
+		if (countEvents > 1) { dayEl.classList.add("other"); }
+	}
+	applyRandomTheme();
+		const weekday = new Date(year, month, d).getDay();
+		if (weekday === 0) { // CN
+			dayEl.style.color = "red";
+			dayEl.style.fontWeight = "bold";
+		}
+		if (weekday === 6) { // T7
+			dayEl.style.color = "blue";
+		}
+
+		dayEl.onclick = () => {
+			document.getElementById("calendar").value = dateStr;
+			closeCalendar();
+			handleDateChange(dateStr);
+		};
+		grid.appendChild(dayEl);
+	}
+}
+	
+	function showCalendar() {
+		const now = new Date();
+		renderCalendar(now.getFullYear(), now.getMonth());
+		document.getElementById("calendar-overlay").style.display = "block";
+	}
+	function closeCalendar() {
+		document.getElementById("calendar-overlay").style.display = "none";
+	}
+	document.getElementById("calendar").addEventListener("focus", showCalendar);
+	document.getElementById("prev-month").addEventListener("click", () => {
+		if (currentMonth === 0) renderCalendar(currentYear-1, 11);
+		else renderCalendar(currentYear, currentMonth-1);
+	});
+	document.getElementById("next-month").addEventListener("click", () => {
+		if (currentMonth === 11) renderCalendar(currentYear+1, 0);
+		else renderCalendar(currentYear, currentMonth+1);
+	});
+
+	function checkOrientation() {
+		if (window.innerWidth < window.innerHeight) {
+			document.body.classList.add('potrait');
+		} else {
+			document.body.classList.remove('potrait');
+		}
+	}
+
+	// Kiểm tra ngay khi tải trang
+	checkOrientation();
+
+	// Kiểm tra lại khi thay đổi kích thước cửa sổ
+	window.addEventListener('resize', checkOrientation);
+
+// plusData
+	const plusBtn = document.getElementById("plus");
+
+	const pluspopup = document.getElementById("pluspopup");
+
+	plusBtn.addEventListener("click", () => {
+		applyRandomTheme();
+		plusoverlay.classList.remove("hidden");
+		pluspopup.classList.remove("hidden");
+	});
+
+	document.querySelectorAll(".plusoverlay").forEach(overlay => {
+		overlay.addEventListener("click", () => {
+		overlay.classList.add("hidden");
+		// nếu muốn tắt popup đi kèm thì có thể tìm popup liên quan
+		const popup = document.getElementById("pluspopup");
+		if (popup) popup.classList.add("hidden");
+		});
+	});
+
+	const closeBtn = document.getElementById("closeplus");
+	closeBtn.addEventListener("click", () => { plusoverlay.classList.add("hidden"); pluspopup.classList.add("hidden"); });
+
+document.getElementById("apply").addEventListener("click", () => {
+	// Nếu không nhập gì thì set mặc định
+	let date = document.getElementById("tcalendar").value;
+	if (!date) {
+		const today = new Date();
+		const local = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+		date = `${local.getFullYear()}-${String(local.getMonth() + 1).padStart(2,"0")}-${String(local.getDate()).padStart(2,"0")}`;
+	}
+
+	let ttitle = document.getElementById("ttitle").value;
+	if (!ttitle) ttitle = "Daily";
+
+	const qaText = document.getElementById("qabox").value.trim();
+	const detailsText = document.getElementById("tdetails").value.trim();
+
+	// logic num tự động
+	const sameDate = data.filter(d => d.date === date);
+	let num = 0;
+	if (sameDate.length > 0) {
+		const maxKey = sameDate.reduce((max, d) => Math.max(max, parseInt(d.key.slice(8))), 0);
+		num = maxKey + 1;
+	}
+
+	const key = date.replace(/-/g, "") + String(num).padStart(3, "0");
+
+	// Parse QA
+	const qaLines = qaText.split("\n").filter(l => l.trim() !== "");
+	const qaArr = qaLines.map(line => {
+		if (line.includes("=>")) {
+			const [qPart, aPart] = line.split("=>").map(s => s.trim());
+			const words = aPart.split(" ");
+			const s = words.pop();
+			const cardName = words.join(" ");
+
+			let foundKey = "";
+			for (const k in cardInfo) {
+				if (cardInfo[k].cardname === cardName) {
+					foundKey = k;
+					break;
+				}
+			}
+
+			return `{ q: \`${qPart}\`, a: \`${foundKey}\`, s:\`${s}\` }`;
+		} else {
+			const words = line.split(" ");
+			const s = words.pop();
+			const cardName = words.join(" ");
+
+			let foundKey = "";
+			for (const k in cardInfo) {
+				if (cardInfo[k].cardname === cardName) {
+					foundKey = k;
+					break;
+				}
+			}
+
+			return `{ q: \`Daily \`, a: \`${foundKey}\`, s:\`${s}\` }`;
+		}
+	});
+
+	const details = detailsText.split("\n").join("<br>");
+
+	const output = `\t\t{
+		\tdate: \`${date}\`,
+		\tkey: \`${key}\`,
+		\ttitle: \`${ttitle}\`,
+		\tdetails: \`${details}\`,
+		\tqa: [
+		${qaArr.map(item => `\t\t\t\t${item}`).join(",\n")}
+		\t]
+	\t},`;
+
+	document.getElementById("tresult").value = output;
+});
+
+	// chạy khi load trang
+	document.addEventListener("DOMContentLoaded", () => {
+		const q = getRandomQuote();
+		applyRandomTheme();
+		document.getElementById("quote").textContent = q.quote;
+		document.getElementById("author").textContent = q.author;
+		clearnav();
+
+		const seen = {};
+		const duplicates = [];
+
+		data.forEach(item => {
+		if (seen[item.key]) {
+			duplicates.push(`${item.date} (${item.key})`);
+		} else {
+		seen[item.key] = true;
+		}
+		});
+
+	});	
+
+</script>
+</body>
+</html>

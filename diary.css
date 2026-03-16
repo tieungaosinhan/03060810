@@ -1,0 +1,405 @@
+body {
+	font-family: "Georgia", serif;
+	margin: 0;
+	padding: 0;
+	min-height: 100vh;
+	font-size: 2vh;
+	line-height: 3vh;
+}
+.monet {
+	border-radius: 12px;
+	box-shadow: 0 2.5vh 2.5vw rgba(0,0,0,0.1);
+	background: rgba(255,255,255,0.6); /* nền mờ mặc định */
+	backdrop-filter: blur(6px);
+	font-family: "Georgia", serif;
+	transition: background 1s ease;
+}
+#calendar{
+	display: flex;
+	width: 30vw;
+	height: 5vh;
+	font-size: 3vh;
+	line-height: 3vh;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+	background-color: rgb(246, 246, 246);
+	border-radius: 2vw;
+	box-shadow: 0 2.5vh 2.5vw rgba(0,0,0,0.1);
+	margin: 0 auto;
+	border: none;
+}
+.potrait #calendar{
+	width: 96vw;
+}
+#horizontal-pagination{
+	display: flex;
+	width: 30vw;
+	height: 5vh;
+	line-height: 3vh;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+	background-color: rgb(246, 246, 246);
+	border-radius: 2vw;
+	box-shadow: 0 2.5vh 2.5vw rgba(0,0,0,0.1);
+	margin: 0 auto;
+	border: none;
+}
+.potrait #horizontal-pagination{
+	width: 96vw;
+}
+.horizontal{
+	display: flex;
+	margin: 0 auto;
+	box-sizing: border-box;
+	width: 30vw;
+	height: 90vh;
+	overflow: hidden;
+	position: relative;
+	border-radius: 2vw;
+}
+.potrait .horizontal{
+	width: 96vw;
+}
+.cardwrapper{
+	margin-top: 2vh;
+	height: 30vh;
+	margin: 0 auto;
+	box-sizing: border-box;
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+}
+#temp-horizontal {
+	display: flex;
+	width: 300%; /* 3 trang */
+	transition: margin-left 0.5s ease;
+	position: absolute;
+}
+#temp-vertical {
+	display: flex;
+	position: absolute;
+	width: 100%;
+	flex-flow: column;
+}
+.horizontal-section {
+	scroll-snap-align:start;
+	width: 100%;
+	margin: 1vh 0 0 0;
+	padding: 2vw 2vh;
+	box-sizing: border-box;
+	border-radius: 12px;
+	border-color: rgb(246, 246, 246);
+	background: rgba(255,255,255,0.6);
+	backdrop-filter: blur(6px);
+	overflow: auto;
+	height: 88vh;
+	box-sizing: border-box;
+	border-radius: 2vw;
+	text-align: justify;
+}
+.cardbox{
+	display: block;
+	height: 30vh;
+	box-sizing: border-box;
+	padding: 1vh;
+	margin:0 auto;
+	border-color: rgb(246, 246, 246);
+	border-radius: 1vw;
+}
+.cardbox img{
+	height: 28vh;
+}	
+.Reversed img,.reversed img{
+	transform: rotate(180deg);
+}			
+.Fire{
+	background-image: 
+		linear-gradient(to right, #fda085, #fff, #fda085), /* ngang */
+		linear-gradient(to bottom, #fda085, #fff, #fda085); /* dọc */
+	background-blend-mode: multiply; /* trộn màu */
+}
+
+.Water{
+	background-image: 
+		linear-gradient(to right, #add8e6 , #000, #add8e6 ), /* ngang */
+		linear-gradient(to bottom, #add8e6, #000, #add8e6 ); /* dọc */
+	background-blend-mode: multiply; /* trộn màu */
+}
+.Air {
+	background-image: 
+		linear-gradient(to right, #b0c4de, #000, #b0c4de), /* ngang */
+		linear-gradient(to bottom, #b0c4de, #000, #b0c4de); /* dọc */
+	background-blend-mode: multiply; /* trộn màu */
+}
+.Earth {
+	background-image: 
+		linear-gradient(to right, #8B4513, #000, #8B4513), /* ngang */
+		linear-gradient(to bottom, #8B4513, #000, #8B4513); /* dọc */
+	background-blend-mode: multiply; /* trộn màu */
+}
+.day.Fire{
+	background-image: 
+		linear-gradient(to right, #fda085, #fff, #fda085), /* ngang */
+		linear-gradient(to bottom, #fda085, #fff, #fda085); /* dọc */
+	background-blend-mode: multiply; /* trộn màu */
+}
+
+.day.Water{
+	background-image: 
+		linear-gradient(to right, #add8e6 , #fff, #add8e6 ), /* ngang */
+		linear-gradient(to bottom, #add8e6, #fff, #add8e6 ); /* dọc */
+	background-blend-mode: multiply; /* trộn màu */
+}
+.day.Air {
+	background-image: 
+		linear-gradient(to right, #b0c4de, #fff, #b0c4de), /* ngang */
+		linear-gradient(to bottom, #b0c4de, #fff, #b0c4de); /* dọc */
+	background-blend-mode: multiply; /* trộn màu */
+}
+
+.day.Earth {
+	background-image: 
+		linear-gradient(to right, #8B4513, #fff, #8B4513), /* ngang */
+		linear-gradient(to bottom, #8B4513, #fff, #8B4513); /* dọc */
+	background-blend-mode: multiply; /* trộn màu */
+}
+
+.day.other {
+	font-weight: bold;
+	text-shadow: 
+		0 0 2px #FFB347,	 /* viền vàng mảnh */
+		0 0 6px #FFB347,	 /* ánh sáng vàng */
+		0 0 12px #FFB347;	/* thêm chút cam để rực rỡ */
+	}
+
+/* Pagination */
+.pagination {
+	display:flex;
+	margin:0 auto;
+	justify-content:center;
+	font-size: 2vh;
+}
+.pagination.vertical {
+	flex-direction: column;
+	position: absolute;
+	padding: 1vh;
+	top: 0;
+	right: 0;
+	box-sizing: border-box;
+	height: 30vh;
+}
+.pagination.vertical button {
+	line-height: 1.5vh;
+	font-size: 1.5vh;
+}
+.pagination button {
+	padding:1vh;border:1px solid #ccc;background:#f5f5f5;cursor:pointer;font-size: 2vh;
+}
+.pagination button.active {background:#ddd;font-weight:bold}
+.pagination button:disabled {opacity:0.5;cursor:not-allowed}
+	
+
+.quote-box {
+	position: relative;
+	display: flex;
+	flex-flow: wrap;
+	align-items: center;
+	padding: 2vw;
+	box-sizing: border-box;
+}
+
+.quote-box p {
+		font-size: 3vh;
+		line-height: 5vh;
+		color: #3e3e3e;
+		margin: 0;
+		font-style: italic;
+		text-align: left;
+}
+
+.quote-box .author {
+		text-align: right;
+		margin-top: 1vh;
+		color: #6b4f3f;
+		font-weight: 500;
+}
+#eventSelect{
+	width: 100%;
+	display: inline-block;
+	height: 5vh;
+	font-size: 2vh;
+	line-height: 3vh;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+	background: rgba(255,255,255,0.6); /* nền mờ mặc định */
+	backdrop-filter: blur(6px);
+	border: none;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+.qbox{
+	display: block;
+	height: 40vh;
+	overflow: auto;
+	margin: 2vh auto;
+	text-align: justify;
+	border: 3px solid rgba(255, 154, 158, 0.05); /* viền dày */
+	padding: 1vh;
+	background-clip: padding-box;	/* giữ nền trong suốt */
+	box-sizing: border-box;
+}
+.qbox .highlight {
+	text-shadow: -1vw 1vh 1vh var(--monet-color);
+    font-style: italic;
+    font-weight: bold;
+}
+
+/*pop up*/
+#popup-overlay {
+	display: none; /* ẩn mặc định */
+	position: fixed;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background: rgba(0,0,0,0.5);
+	z-index: 999;
+}
+
+/* hộp popup */
+#popup-box {
+	position: absolute;
+	top: 50%; left: 50%;
+	transform: translate(-50%, -50%);
+	background: #fff;
+	padding: 20px;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+	text-align: center;
+	min-width: 250px;
+}
+
+#popup-box button {
+    border: none;
+    background: #fff;
+    cursor: pointer;
+    position: absolute;
+    height: 5vh;
+    width: 5vh;
+    border-radius: 5vh;
+    bottom: 5vh;
+    right: 5vh;
+    opacity: 0.25;
+}
+/* overlay nền mờ */
+#calendar-overlay {
+	display: none;
+	position: fixed;
+	inset: 0;
+	background: rgba(0,0,0,0.4);
+	z-index: 999;
+}
+
+/* hộp popup */
+#calendar-popup {
+	position: absolute;
+	top: 50%; left: 50%;
+	transform: translate(-50%, -50%);
+	background: #fff;
+	padding: 20px;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+	min-width: 320px;
+	animation: fadeIn 0.3s ease;
+}
+
+.calendar-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.calendar-header button {
+	border: none;
+	background: #0078d4;
+	color: #fff;
+	padding: 1vh;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 2vh;
+}
+
+.calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 4px;
+	margin-top: 10px;
+}
+.day {
+	padding: 1vh;
+	text-align: center;
+	border-radius: 1vh;
+	cursor: pointer;
+}
+.day.today {
+	border: 3px solid transparent; /* viền dày */
+	font-weight: bold;						 /* chữ đậm hơn */
+	padding: 1vh;
+	border-radius: 1vh;
+	background-clip: padding-box;	/* giữ nền trong suốt */
+	/* gradient border */
+	border-image: linear-gradient(135deg, #ff9a9e, #fad0c4) 1;
+}
+
+.day.has-event { background: linear-gradient(135deg, #ff9a9e, #fad0c4); }
+
+#calendar-popup .close-btn {
+	margin-top: 10px;
+	padding: 6px 12px;
+	border: none;
+	border-radius: 6px;
+	background: #0078d4;
+	color: #fff;
+	cursor: pointer;
+}
+
+@keyframes fadeIn {
+	from {opacity: 0; transform: translate(-50%, -45%);}
+	to	 {opacity: 1; transform: translate(-50%, -50%);}
+}
+#plusoverlay {
+	position: fixed;
+	top: 0; left: 0;
+	width: 100%; height: 100%;
+	background: rgba(0,0,0,0.05);
+	opacity: 0.5;
+}
+
+.pluspopup {
+	width: 30vw;
+	position: fixed;
+	background: #fff;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 9999;
+	height: 100vh;
+	display: flex;
+	flex-flow: column;
+	padding: 2vw 2vh;
+	box-sizing: border-box;
+}
+.potrait .pluspopup{
+	width: 96vw;
+}
+.hidden {
+	display: none;
+}
+#plus {
+	position: fixed;
+	opacity: 0.25;
+	height: 5vh;
+	width: 5vh;
+	border-radius: 5vh;
+	bottom: 1vh;
+	right: 1vw;
+	border-color: transparent;
+	cursor: pointer;
+}

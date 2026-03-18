@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8">
+	<title>Diary Form</title>
+</head>
+<body>
+	<input type="date" id="dateInput">
+	<div id="result"></div>
+	<button id="apply">Apply</button>
+	<br>
+	<textarea id="output" rows="6" cols="60"></textarea>
+<script src="notebook.js"></script>
+	<script>
+
+
+		const datasets = {state, mood, health, weather, temperature, minimal, spend};
+
+		const resultDiv = document.getElementById("result");
+		for (const key in datasets) {
+			const select = document.createElement("select");
+			select.id = key;
+
+			const defaultOpt = document.createElement("option");
+			defaultOpt.value = "";
+			defaultOpt.textContent = "Chọn " + key;
+			select.appendChild(defaultOpt);
+
+			for (const id in datasets[key]) {
+				const opt = document.createElement("option");
+				opt.value = id;
+				opt.textContent = datasets[key][id].st + " " + datasets[key][id].emoji;
+				select.appendChild(opt);
+			}
+			resultDiv.appendChild(select);
+			resultDiv.appendChild(document.createElement("br"));
+		}
+
+
+		document.getElementById("apply").addEventListener("click", () => {
+			let date = document.getElementById("dateInput").value;
+			if (!date) {
+				const today = new Date();
+				const yyyy = today.getFullYear();
+				const mm = String(today.getMonth()+1).padStart(2,"0");
+				const dd = String(today.getDate()).padStart(2,"0");
+				date = `${yyyy}-${mm}-${dd}`;
+			}
+
+			const obj = {date};
+			for (const key in datasets) {
+				const val = document.getElementById(key).value;
+				if (!val) {
+					alert("Bạn chưa chọn " + key + "!");
+					return;
+				}
+				obj[key] = val;
+			}
+
+			// Tự ghép chuỗi theo format yêu cầu
+			let result = "{ ";
+			result += `date: "${obj.date}"`;
+			for (const key in datasets) {
+				result += `, ${key}: "${obj[key]}"`;
+			}
+			result += " }";
+
+			document.getElementById("output").value = result;
+		});
+
+
+	</script>
+</body>
+</html>

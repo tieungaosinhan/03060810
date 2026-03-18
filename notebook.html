@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8">
+	<title>Notebook</title>
+	<link rel="stylesheet" href="notebook.css">
+</head>
+<body>
+	<div class="notebook">
+		<div class="page active" id="state"></div>
+		<div class="page" id="mood"></div>
+		<div class="page" id="health"></div>
+		<div class="page" id="weather"></div>
+		<div class="page" id="temperature"></div>
+		<div class="page" id="minimal"></div>
+		<div class="page" id="spend"></div>
+		<div class="tabs" id="tabs"></div>
+	</div>
+<script src="diarydata.js"></script>
+<script src="notebook.js"></script>
+<script>
+	const pages = document.querySelectorAll('.page');
+	const tabsContainer = document.getElementById('tabs');
+
+	// Tạo tab tự động từ id của page
+	pages.forEach(page => {
+		const tab = document.createElement('div');
+		tab.className = 'tab';
+		tab.textContent = page.id; // dùng id làm nhãn
+		tab.onclick = () => showPage(page.id, tab);
+		tabsContainer.appendChild(tab);
+	});
+
+	// Đặt tab đầu tiên active
+	tabsContainer.firstChild.classList.add('active');
+
+	function showPage(pageId, tabEl) {
+		// đổi page
+		pages.forEach(p => p.classList.remove('active'));
+		document.getElementById(pageId).classList.add('active');
+		// đổi tab
+		document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+		tabEl.classList.add('active');
+	}
+
+	const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+	
+	function createCalendar(year, rootId, dataMap) {
+		const root = document.getElementById(rootId);
+
+		// Tạo calendar + legend bên trong root
+		const calendar = document.createElement('div');
+		calendar.className = "calendar";
+		const legendDiv = document.createElement('div');
+		legendDiv.className = "legend";
+		legendDiv.id = "legend-" + rootId;
+
+		root.appendChild(calendar);
+		root.appendChild(legendDiv);
+
+		// Header row
+		const headerRow = document.createElement('div');
+		headerRow.className = "row";
+		const emptyCell = document.createElement('div');
+		emptyCell.className = "corner-cell";
+		headerRow.appendChild(emptyCell);
+		for (let m = 0; m < 12; m++) {
+			const monthLabel = document.createElement('div');
+			monthLabel.textContent = months[m];
+			monthLabel.className = "month-label";
+			headerRow.appendChild(monthLabel);
+		}
+		calendar.appendChild(headerRow);
+
+		// Day rows
+		for (let day = 1; day <= 31; day++) {
+			const row = document.createElement('div');
+			row.className = "row";
+
+			const dayLabel = document.createElement('div');
+			dayLabel.textContent = day;
+			dayLabel.className = "day-label";
+			row.appendChild(dayLabel);
+
+			for (let month = 1; month <= 12; month++) {
+				const cell = document.createElement('div');
+				cell.className = `cell cell-${day}-${month}`;
+
+				const date = new Date(year, month - 1, day);
+				if (date.getMonth() === month - 1 && date.getDate() === day) {
+					const yyyy = date.getFullYear();
+					const mm = String(date.getMonth() + 1).padStart(2, "0");
+					const dd = String(date.getDate()).padStart(2, "0");
+					const isoDate = `${yyyy}-${mm}-${dd}`;
+
+					const entry = diary.find(e => e.date === isoDate);
+
+					if (entry && entry[rootId]) {
+						const dataObj = dataMap[entry[rootId]];
+						cell.style.background = dataObj.color;
+
+						// Tooltip
+						const tooltip = document.createElement('span');
+						tooltip.className = "tooltip";
+						tooltip.textContent = `Ngày ${day}/${month}/${year} - ${dataObj.st} - ${dataObj.emoji}`;
+						cell.appendChild(tooltip);
+					}
+				} else {
+					cell.style.visibility = "hidden";
+				}
+
+				row.appendChild(cell);
+			}
+			calendar.appendChild(row);
+		}
+
+		// Legend
+		for (const code in dataMap) {
+			const item = document.createElement('div');
+			item.className = "legend-item";
+
+			const colorBox = document.createElement('div');
+			colorBox.className = "legend-color";
+			colorBox.style.background = dataMap[code].color;
+
+			const detail = document.createElement('div');
+			detail.className = "legend-detail";
+
+			const emojiDiv = document.createElement('div');
+			emojiDiv.className = "legend-emoji";
+			emojiDiv.textContent = dataMap[code].emoji;
+
+			const textDiv = document.createElement('div');
+			textDiv.className = "legend-text";
+			textDiv.textContent = dataMap[code].st;
+
+			detail.appendChild(emojiDiv);
+			detail.appendChild(textDiv);
+
+			item.appendChild(colorBox);
+			item.appendChild(detail);
+			legendDiv.appendChild(item);
+		}
+
+
+	}
+	
+	createCalendar(2026, 'state', state);
+	createCalendar(2026, 'mood', mood);
+	createCalendar(2026, 'health', health);
+	createCalendar(2026, 'weather', weather);
+	createCalendar(2026, 'temperature', temperature);
+	createCalendar(2026, 'minimal', minimal);
+	createCalendar(2026, 'spend', spend);
+</script>
+</body>
+</html>

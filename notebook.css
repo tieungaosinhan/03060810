@@ -1,0 +1,137 @@
+* {font-family: monospace; margin:0;padding:0;box-sizing:border-box;}
+.notebook{
+	width:80vw;
+	height:90vh;
+	border:2px solid #8b5e3c;
+	background:#fff;
+	box-shadow:5px 5px 15px rgba(0,0,0,0.2);
+	position:relative;
+	box-sizing: border-box;
+	margin: 5vh 10vw;
+}
+.page {
+	padding:2vh 2vw;
+	display:none;
+	height:100%;
+}
+.page.active {
+	display:flex;
+}
+.tabs {
+	position:absolute;
+	right:-9vw;
+	top:-2px; /* căn trên cùng */
+	display:flex;
+	flex-direction:column;
+	gap:1vh;
+}
+.tab {
+	line-height:5vh;
+	background:#d9a066;
+	color:#fff;
+	padding:0 1vw;
+	cursor:pointer;
+	font-weight:bold;
+	transition:background 0.3s;
+	width:9vw;
+	border:2px solid #8b5e3c;
+	text-transform: uppercase;
+}
+.tab:hover {
+	background:#b97a3d;
+}
+.tab.active {
+	background:#fff; /* cùng màu với page */
+	color:#8b5e3c;
+	border-left:none; /* bỏ border trái để liền với page */
+}
+.calendar {
+	display: flex;
+	flex-direction: column;
+	width: 75%;
+	justify-content: center;
+}
+.row {
+	display: flex;
+}
+.row div{
+	box-sizing: border-box;
+	height: 2.5vh;
+	width: 5vw;
+	line-height: 2.5vh;
+}
+.corner-cell {
+	visibility: hidden; /* ô trống góc */
+}
+.month-label, .day-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+}
+.cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 0.5px dashed rgba(0,0,0,0.1);
+	background: #fff;
+	font-size: 12px;
+	position: relative;
+}
+.cell:hover {
+	background: #f0f8ff;
+	border-color: #666;
+	cursor: pointer;
+}
+.cell .tooltip {
+	visibility: hidden;
+	background: #333;
+	color: #fff;
+	text-align: center;
+	border-radius: 4px;
+	padding: 4px 8px;
+	position: absolute;
+	z-index: 1;
+	bottom: 120%; /* hiện phía trên cell */
+	left: 50%;
+	transform: translateX(-50%);
+	white-space: nowrap;
+}
+
+.cell:hover .tooltip {
+	visibility: visible;
+}
+.legend {
+	width: 25%;
+	height: 100%;
+	padding: 2vw;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+}
+.legend-item {
+	display: flex;
+	align-items: center;
+	margin: 8px 0;
+}
+.legend-color {
+	border-radius: 50%;
+	display: block;
+	height: 4vh;
+	width: 4vh;
+	flex: 0 0 auto;
+}
+.legend-detail {
+	padding: 0 1vw;
+	line-height: 2vh;
+    font-family: monospace;   /* font chữ đều nhau */
+    white-space: pre;         /* giữ nguyên tab/khoảng trắng */
+}
+
+#info {
+	margin-top: 10px;
+	text-align: center;
+	font-size: 16px;
+	font-weight: bold;
+	width: 100%;
+}

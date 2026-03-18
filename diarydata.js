@@ -1323,5 +1323,14 @@
 				{ q: `40. Hình ảnh tổng thể của toàn bộ câu chuyện mối quan hệ là gì?`, a: `sl`, s:`upright` }
 			]
 		},		
+		{
+			date: `2026-03-18`,
+			key: `20260318000`,
+			title: `Daily`,
+			details: `The farther backward you can look, the farther forward you can see.<br>Winston Churchill<br> <br>Lá Five of Wands là một cảnh tượng hỗn loạn – năm người cùng giơ gậy lên, không ai thật sự đánh nhau, nhưng cũng chẳng ai chịu nhường ai. Đây là lá bài của xung đột, cạnh tranh, và sự va chạm giữa cái tôi 🔥⚔️.<br>---<br>🔮 Tổng quan năng lượng<br>- Mâu thuẫn và bất đồng: Bạn có thể đang ở giữa một tình huống mà ai cũng muốn thể hiện, nhưng không ai chịu lắng nghe.<br>- Cạnh tranh không lành mạnh: Có thể bạn đang bị cuốn vào một môi trường đầy ganh đua, nơi mọi người cố gắng vượt mặt nhau thay vì hợp tác.<br>- Năng lượng phân tán: Quá nhiều ý kiến, quá nhiều hướng đi – khiến bạn khó tập trung và tiến xa.<br>---<br>❤️ Trong tình yêu<br>- Cãi vã nhỏ nhặt: Những bất đồng vụn vặt có thể đang tích tụ – nếu không giải quyết, chúng sẽ trở thành rạn nứt lớn.<br>- Cạnh tranh trong mối quan hệ: Có thể bạn hoặc người ấy đang cố chiếm ưu thế thay vì cùng nhau xây dựng.<br>- Lời nhắn: Tình yêu không phải là cuộc chiến – hãy học cách lắng nghe và thấu hiểu thay vì tranh luận.<br>---<br>💼 Trong công việc<br>- Môi trường đầy cạnh tranh: Có thể bạn đang làm việc trong một nhóm mà ai cũng muốn nổi bật – dẫn đến xung đột và thiếu hợp tác.<br>- Ý tưởng bị xé nhỏ: Quá nhiều quan điểm khiến dự án không đi đến đâu – cần một người đứng ra điều phối.<br>- Lời khuyên: Hãy giữ vững lập trường, nhưng đừng để cái tôi cản trở sự hợp tác.<br>---<br>💰 Tài chính<br>- Chi tiêu bị ảnh hưởng bởi người khác: Có thể bạn đang bị áp lực phải chi tiêu hoặc đầu tư theo xu hướng, thay vì theo kế hoạch cá nhân.<br>- Cạnh tranh về tài chính: Bạn có thể đang so sánh mình với người khác – điều này dễ dẫn đến quyết định sai lầm.<br>- Lời nhắn: Tiền bạc không phải là thước đo giá trị – hãy tập trung vào sự ổn định và mục tiêu dài hạn.<br>---<br>🧘‍♀️ Tinh thần & phát triển cá nhân<br>- Nội tâm hỗn loạn: Có thể bạn đang bị giằng xé giữa nhiều mong muốn, nhiều hướng đi – nhưng chưa biết chọn cái nào.<br>- Cái tôi đang lên tiếng: Bạn có thể đang phản ứng thay vì phản tỉnh – hãy lùi lại để nhìn rõ hơn.<br>- Lời khuyên: Đôi khi, sự im lặng là cách mạnh mẽ nhất để giữ vững bản thân giữa hỗn loạn.<br>---<br>Lá Five of Wands không phải là lời cảnh báo về thảm họa – mà là lời nhắc rằng:<br>Không phải mọi cuộc tranh luận đều cần bạn tham gia. Hãy chọn trận chiến xứng đáng.`,
+			qa: [
+				{ q: `Daily `, a: `w5`, s:`Upright` }
+			]
+		},
 	];
 

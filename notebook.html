@@ -6,52 +6,117 @@
 	<link rel="stylesheet" href="notebook.css">
 </head>
 <body>
-	<div class="notebook">
-		<div class="page active" id="state"></div>
-		<div class="page" id="mood"></div>
-		<div class="page" id="health"></div>
-		<div class="page" id="weather"></div>
-		<div class="page" id="temperature"></div>
-		<div class="page" id="minimal"></div>
-		<div class="page" id="spend"></div>
+	<div class="notebook" id="app">
+
 		<div class="tabs" id="tabs"></div>
 	</div>
 <script src="diarydata.js"></script>
 <script src="notebook.js"></script>
 <script>
-	const pages = document.querySelectorAll('.page');
-	const tabsContainer = document.getElementById('tabs');
+	const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
 
-	// Tạo tab tự động từ id của page
-	pages.forEach(page => {
-		const tab = document.createElement('div');
-		tab.className = 'tab';
-		tab.textContent = page.id; // dùng id làm nhãn
-		tab.onclick = () => showPage(page.id, tab);
-		tabsContainer.appendChild(tab);
-	});
+	// Hàm lấy ngày/tháng/năm hiện tại theo local timezone
+	let thisyear, thismonth, thisday, today;
+	const now = new Date();
+	thisyear = now.getFullYear();
+	thismonth = String(now.getMonth() + 1).padStart(2, "0"); // 01-12
+	thisday = String(now.getDate()).padStart(2, "0");				// 01-31
+	today = `${thisday}/${thismonth}/${thisyear}`
 
-	// Đặt tab đầu tiên active
-	tabsContainer.firstChild.classList.add('active');
+	// Hàm dựng toàn bộ page theo datasets
+	function genPages(datasets) {
+		const container = document.getElementById("app");
 
-	function showPage(pageId, tabEl) {
-		// đổi page
-		pages.forEach(p => p.classList.remove('active'));
-		document.getElementById(pageId).classList.add('active');
-		// đổi tab
-		document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-		tabEl.classList.add('active');
+		for (const key in datasets) {
+			if (datasets.hasOwnProperty(key)) {
+				const ds = datasets[key];
+				const pgType = ds.meta.pg;
+
+				let pageDiv = document.createElement("div");
+				pageDiv.id = key;
+				pageDiv.className = `page ${pgType}`;
+
+				if (pgType === "year") {
+					pageDiv.innerHTML = `
+						<div class="year-selector selector" >
+							<button id="${key}-prevYear" class="prevYear prev">&lt;</button>
+							<input type="text" id="${key}-yearInput" class="yearInput timeinput" readonly value="${thisyear}">
+							<button id="${key}-nextYear" class="nextYear next">&gt;</button>
+						</div>
+					`;
+				}
+				else if (pgType === "month") {
+					pageDiv.innerHTML = `
+						<div class="month-selector selector">
+							<button id="${key}-prevMonth" class="prevMonth prev">&lt;</button>
+							<input type="text" id="${key}-monthInput" class="monthInput timeinput" readonly value="${thismonth}/${thisyear}">
+							<button id="${key}-nextMonth" class="nextMonth next">&gt;</button>
+						</div>
+					`;
+				}
+				else if (pgType === "day") {
+					pageDiv.innerHTML = `
+						<div class="month-selector selector">
+							<button id="${key}-prevMonth" class="prevMonth prev">&lt;</button>
+							<input type="text" id="${key}-monthInput" class="monthInput timeinput" readonly value="${thismonth}/${thisyear}">
+							<button id="${key}-nextMonth" class="nextMonth next">&gt;</button>
+						</div>
+					`;
+				}
+				else {
+					// Các loại pg khác xử lý sau
+					pageDiv.innerHTML = `<div>Chưa xử lý loại pg: ${pgType}</div>`;
+				}
+				container.appendChild(pageDiv);
+			}
+		}
+			const firstPage = app.querySelector(".page");
+		if (firstPage) {
+			firstPage.classList.add("active");
+		}
 	}
 
-	const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
-	
-	function createCalendar(year, rootId, dataMap) {
-		const root = document.getElementById(rootId);
+	// tạo pages
+	genPages(datasets);
 
-		// Tạo calendar + legend bên trong root
-		const calendar = document.createElement('div');
+// duyệt toàn bộ .page ngay sau khi genPages chạy
+	document.querySelectorAll(".page").forEach(page => {
+		const id = page.id;
+		if (page.classList.contains("year")) {
+			CreateByYear(thisyear, id);
+		}
+		if (page.classList.contains("month")) {
+			CreateByMonth(thisyear,thismonth,id);
+		}
+		if (page.classList.contains("day")) {
+			CreateByDay(thisyear,thismonth,id);
+		}
+		if (page.classList.contains("other")) {
+			CreateOther(thisyear, id);
+		}
+	});
+
+	function CreateByYear(year, rootId) {
+
+		const root = document.getElementById(rootId);
+		if (!root) {
+			return;
+		}
+
+		// Xoá calendar/legend cũ nếu có
+		let oldCal = root.querySelector(".calendar");
+		if (oldCal) {
+			oldCal.remove();
+		}
+		let oldLegend = root.querySelector(".legend");
+		if (oldLegend) {
+			oldLegend.remove();
+		}
+
+		// Tạo calendar + legend
+		const calendar = document.createElement("div");
 		calendar.className = "calendar";
-		const legendDiv = document.createElement('div');
+		const legendDiv = document.createElement("div");
 		legendDiv.className = "legend";
 		legendDiv.id = "legend-" + rootId;
 
@@ -59,14 +124,14 @@
 		root.appendChild(legendDiv);
 
 		// Header row
-		const headerRow = document.createElement('div');
+		const headerRow = document.createElement("div");
 		headerRow.className = "row";
-		const emptyCell = document.createElement('div');
+		const emptyCell = document.createElement("div");
 		emptyCell.className = "corner-cell";
 		headerRow.appendChild(emptyCell);
 		for (let m = 0; m < 12; m++) {
-			const monthLabel = document.createElement('div');
-			monthLabel.textContent = months[m];
+			const monthLabel = document.createElement("div");
+			monthLabel.textContent = months[m]; // dùng mảng months toàn cục
 			monthLabel.className = "month-label";
 			headerRow.appendChild(monthLabel);
 		}
@@ -74,33 +139,32 @@
 
 		// Day rows
 		for (let day = 1; day <= 31; day++) {
-			const row = document.createElement('div');
+			const row = document.createElement("div");
 			row.className = "row";
 
-			const dayLabel = document.createElement('div');
+			const dayLabel = document.createElement("div");
 			dayLabel.textContent = day;
 			dayLabel.className = "day-label";
 			row.appendChild(dayLabel);
 
 			for (let month = 1; month <= 12; month++) {
-				const cell = document.createElement('div');
+				const cell = document.createElement("div");
 				cell.className = `cell cell-${day}-${month}`;
 
 				const date = new Date(year, month - 1, day);
 				if (date.getMonth() === month - 1 && date.getDate() === day) {
 					const yyyy = date.getFullYear();
-					const mm = String(date.getMonth() + 1).padStart(2, "0");
-					const dd = String(date.getDate()).padStart(2, "0");
+					const mm = months[month - 1]; // lấy từ mảng months toàn cục
+					const dd = String(day).padStart(2, "0");
 					const isoDate = `${yyyy}-${mm}-${dd}`;
 
 					const entry = diary.find(e => e.date === isoDate);
+					const dataMap = datasets[rootId];
 
 					if (entry && entry[rootId]) {
 						const dataObj = dataMap[entry[rootId]];
 						cell.style.background = dataObj.color;
-
-						// Tooltip
-						const tooltip = document.createElement('span');
+						const tooltip = document.createElement("span");
 						tooltip.className = "tooltip";
 						tooltip.textContent = `Ngày ${day}/${month}/${year} - ${dataObj.st} - ${dataObj.emoji}`;
 						cell.appendChild(tooltip);
@@ -115,22 +179,23 @@
 		}
 
 		// Legend
+		const dataMap = datasets[rootId];
 		for (const code in dataMap) {
-			const item = document.createElement('div');
+			const item = document.createElement("div");
 			item.className = "legend-item";
 
-			const colorBox = document.createElement('div');
+			const colorBox = document.createElement("div");
 			colorBox.className = "legend-color";
 			colorBox.style.background = dataMap[code].color;
 
-			const detail = document.createElement('div');
+			const detail = document.createElement("div");
 			detail.className = "legend-detail";
 
-			const emojiDiv = document.createElement('div');
+			const emojiDiv = document.createElement("div");
 			emojiDiv.className = "legend-emoji";
 			emojiDiv.textContent = dataMap[code].emoji;
 
-			const textDiv = document.createElement('div');
+			const textDiv = document.createElement("div");
 			textDiv.className = "legend-text";
 			textDiv.textContent = dataMap[code].st;
 
@@ -141,17 +206,207 @@
 			item.appendChild(detail);
 			legendDiv.appendChild(item);
 		}
-
-
 	}
-	
-	createCalendar(2026, 'state', state);
-	createCalendar(2026, 'mood', mood);
-	createCalendar(2026, 'health', health);
-	createCalendar(2026, 'weather', weather);
-	createCalendar(2026, 'temperature', temperature);
-	createCalendar(2026, 'minimal', minimal);
-	createCalendar(2026, 'spend', spend);
+
+	function CreateByMonth(year, month, rootId) {
+		const root = document.getElementById(rootId);
+		if (!root) return;
+
+		// Xoá calendar/legend cũ
+		root.querySelectorAll(".calendar, .legend").forEach(el => el.remove());
+
+		const calendar = document.createElement("div");
+		calendar.className = "calendar";
+		root.appendChild(calendar);
+
+		const dataMap = datasets[rootId];
+		const codes = Object.keys(dataMap).filter(k => k !== "meta");
+
+		// Số ngày trong tháng
+		const daysInMonth = new Date(year, parseInt(month), 0).getDate();
+
+		for (let day = 1; day <= daysInMonth; day++) {
+			const yyyy = year;
+			const mm = String(month).padStart(2, "0");
+			const dd = String(day).padStart(2, "0");
+			const isoDate = `${yyyy}-${mm}-${dd}`;
+
+			const entry = diary.find(e => e.date === isoDate);
+
+			const row = document.createElement("div");
+			row.className = "day-row";
+
+			const dayLabel = document.createElement("div");
+			dayLabel.className = "day-label";
+			dayLabel.textContent = dd;
+			row.appendChild(dayLabel);
+
+			const valuesDiv = document.createElement("div");
+			valuesDiv.className = "day-values";
+
+			const valuestxt = document.createElement("div");
+			valuestxt.className = "day-txt";
+			valuesDiv.appendChild(valuestxt);
+
+			// Chỉ xử lý khi entry tồn tại và field là mảng
+			if (entry && Array.isArray(entry[rootId])) {
+				// emoji-box cho từng trạng thái
+				entry[rootId].forEach(code => {
+					const dataObj = dataMap[code];
+					if (!dataObj) return;
+
+					const box = document.createElement("div");
+					box.className = "emoji-box";
+					box.textContent = dataObj.emoji;
+					box.title = dataObj.st;
+					box.style.backgroundColor = dataObj.color;
+					box.style.color = isDarkColor(dataObj.color) ? "#fff" : "#000";
+					valuesDiv.appendChild(box);
+				});
+
+				// text tổng hợp trạng thái
+				const states = entry[rootId].map(code => dataMap[code]?.st).filter(Boolean);
+				if (states.length > 0) {
+					valuestxt.textContent = dataMap.meta.label + ": " + states.join(", ");
+				}
+			} else {
+				valuestxt.textContent = ""; // không có dữ liệu thì để trống
+			}
+
+			row.appendChild(valuesDiv);
+			calendar.appendChild(row);
+		}
+
+		// Legend giữ nguyên
+		const legendDiv = document.createElement("div");
+		legendDiv.className = "legend";
+		legendDiv.id = "legend-" + rootId;
+		root.appendChild(legendDiv);
+
+		codes.forEach(code => {
+			const item = document.createElement("div");
+			item.className = "legend-item";
+
+			const colorBox = document.createElement("div");
+			colorBox.className = "legend-color";
+			colorBox.style.background = dataMap[code].color;
+
+			const detail = document.createElement("div");
+			detail.className = "legend-detail";
+
+			const emojiDiv = document.createElement("div");
+			emojiDiv.className = "legend-emoji";
+			emojiDiv.textContent = dataMap[code].emoji;
+
+			const textDiv = document.createElement("div");
+			textDiv.className = "legend-text";
+			textDiv.textContent = dataMap[code].st;
+
+			detail.appendChild(emojiDiv);
+			detail.appendChild(textDiv);
+
+			item.appendChild(colorBox);
+			item.appendChild(detail);
+			legendDiv.appendChild(item);
+		});
+	}
+
+	function CreateByDay(year, month, field) {
+		const root = document.getElementById(field);
+		if (!root) return;
+
+		// Xoá calendar cũ
+		root.querySelectorAll(".calendar").forEach(el => el.remove());
+
+		const calendar = document.createElement("div");
+		calendar.className = "calendar";
+		root.appendChild(calendar);
+
+		const daysInMonth = new Date(year, parseInt(month), 0).getDate();
+
+		for (let day = 1; day <= daysInMonth; day++) {
+			const yyyy = year;
+			const mm = String(month).padStart(2, "0");
+			const dd = String(day).padStart(2, "0");
+			const isoDate = `${yyyy}-${mm}-${dd}`;
+
+			const entry = diary.find(e => e.date === isoDate);
+
+			const row = document.createElement("div");
+			row.className = "day-row";
+
+			// nếu ngày < 5 thì thêm class early
+			if (day < 5) row.classList.add("early");
+
+			const dayLabel = document.createElement("div");
+			dayLabel.className = "day-label";
+			dayLabel.textContent = dd;
+			row.appendChild(dayLabel);
+
+			const valuesDiv = document.createElement("div");
+			valuesDiv.className = "day-values";
+
+			if (entry && entry[field]) {
+				const fullText = String(entry[field]);
+				const stateCode = entry.state;					 // ví dụ "s3"
+				const stateColor = datasets.state[stateCode].color;
+
+				const textDiv = document.createElement("div");
+				textDiv.className = "day-text";
+				textDiv.textContent = fullText;
+				valuesDiv.appendChild(textDiv);
+
+				// popup gắn trực tiếp vào row
+				const popup = document.createElement("div");
+				popup.className = "popover";
+				popup.style.backgroundColor = stateColor;
+				popup.style.color = isDarkColor(stateColor) ? "#fff" : "#000";
+				const popLabel = document.createElement("div");
+				popLabel.className = "poplabel";
+				popLabel.textContent = datasets[field].meta.label;
+
+				const popContent = document.createElement("div");
+				popContent.className = "popcontent";
+				popContent.textContent = fullText;
+
+				popup.appendChild(popLabel);
+				popup.appendChild(popContent);
+				row.appendChild(popup);
+			}
+
+
+			row.appendChild(valuesDiv);
+			calendar.appendChild(row);
+		}
+	}
+
+	function isDarkColor(hex) {
+		hex = hex.replace("#", "");
+		const r = parseInt(hex.substr(0,2),16);
+		const g = parseInt(hex.substr(2,2),16);
+		const b = parseInt(hex.substr(4,2),16);
+		const brightness = (r*299 + g*587 + b*114) / 1000;
+		return brightness < 128;
+	}
+
+	function showPage(pageId, tabEl) {
+		// đổi page
+		document.querySelectorAll(".page").forEach(p => p.classList.remove('active'));
+		document.getElementById(pageId).classList.add('active');
+		// đổi tab
+		document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+		tabEl.classList.add('active');
+	}
+// Đặt tab đầu tiên active
+	const tabsContainer = document.getElementById('tabs');
+	document.querySelectorAll(".page").forEach(page => {
+		const tab = document.createElement('div');
+		tab.className = 'tab';
+		tab.textContent = page.id; // dùng id làm nhãn
+		tab.onclick = () => showPage(page.id, tab);
+		tabsContainer.appendChild(tab);
+	});
+	tabsContainer.firstChild.classList.add('active');
 </script>
 </body>
 </html>

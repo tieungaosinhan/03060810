@@ -3,72 +3,252 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Diary Form</title>
+	<style>
+		.btn-group button {
+			margin: 4px;
+			padding: 6px 10px;
+			border: 1px solid #ccc;
+			cursor: pointer;
+			background-color: #fff; /* mặc định trắng */
+			color: #000;
+		}
+		.btn-group button.active {
+			outline: 2px solid #000;
+		}
+/* Khối chứa input và gợi ý */
+.field-wrapper {
+	position: relative; /* để popup định vị theo input */
+	margin-bottom: 20px;
+}
+
+/* Ô nhập text */
+.field-wrapper input[type="text"] {
+	width: 300px;
+	padding: 6px 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+/* Popup gợi ý */
+.suggestions-box {
+	position: absolute;
+	top: 100%; /* ngay dưới input */
+	left: 0;
+	width: 100%;
+	border: 1px solid #ccc;
+	border-top: none;
+	background: #fff;
+	z-index: 1000;
+	display: none; /* mặc định ẩn */
+	max-height: 120px;
+	overflow-y: auto;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Mỗi item gợi ý */
+.suggestions-box div {
+	padding: 6px 8px;
+	cursor: pointer;
+}
+
+/* Hover item */
+.suggestions-box div:hover {
+	background-color: #f0f0f0;
+}
+
+	</style>
 </head>
 <body>
 	<input type="date" id="dateInput">
 	<div id="result"></div>
 	<button id="apply">Apply</button>
 	<br>
-	<textarea id="output" rows="6" cols="60"></textarea>
+	<textarea id="output" rows="6" cols="100"></textarea>
+
+<script src="diarydata.js"></script>
 <script src="notebook.js"></script>
-	<script>
+<script>
+	function isDarkColor(hex) {
+		hex = hex.replace("#", "");
+		const r = parseInt(hex.substr(0,2),16);
+		const g = parseInt(hex.substr(2,2),16);
+		const b = parseInt(hex.substr(4,2),16);
+		const brightness = (r*299 + g*587 + b*114) / 1000;
+		return brightness < 128;
+	}
 
+	function buildField(id) {
+		const data = datasets[id];
+		const meta = data.meta;
+		const wrapper = document.createElement("div");
+		wrapper.id = id;
+		const lbl = document.createElement("div");
+		lbl.textContent = meta.label;
+		wrapper.appendChild(lbl);
 
-		const datasets = {state, mood, health, weather, temperature, minimal, spend};
-
-		const resultDiv = document.getElementById("result");
-		for (const key in datasets) {
-			const select = document.createElement("select");
-			select.id = key;
-
-			const defaultOpt = document.createElement("option");
-			defaultOpt.value = "";
-			defaultOpt.textContent = "Chọn " + key;
-			select.appendChild(defaultOpt);
-
-			for (const id in datasets[key]) {
-				const opt = document.createElement("option");
-				opt.value = id;
-				opt.textContent = datasets[key][id].st + " " + datasets[key][id].emoji;
-				select.appendChild(opt);
+		if (meta.type === "btn") {
+			wrapper.className = "btn-group";
+			for (const key in data) {
+				if (key === "meta") continue;
+				const item = data[key];
+				const btn = document.createElement("button");
+				btn.id = key;
+				btn.textContent = item.st + " " + item.emoji;
+				btn.addEventListener("click", () => {
+					if (!meta.multi) {
+						[...wrapper.querySelectorAll("button")].forEach(b => {
+							b.classList.remove("active");
+							b.style.backgroundColor = "#fff";
+							b.style.color = "#000";
+						});
+						btn.classList.add("active");
+						btn.style.backgroundColor = item.color;
+						btn.style.color = isDarkColor(item.color) ? "#fff" : "#000";
+					} else {
+						const active = btn.classList.toggle("active");
+						if (active) {
+							btn.style.backgroundColor = item.color;
+							btn.style.color = isDarkColor(item.color) ? "#fff" : "#000";
+						} else {
+							btn.style.backgroundColor = "#fff";
+							btn.style.color = "#000";
+						}
+					}
+				});
+				wrapper.appendChild(btn);
 			}
-			resultDiv.appendChild(select);
-			resultDiv.appendChild(document.createElement("br"));
+		} else if (meta.type === "number") {
+			const input = document.createElement("input");
+			input.type = "number";
+			input.id = id+"Input";
+			wrapper.appendChild(input);
+		} else if (meta.type === "text") {
+			const wrapperDiv = document.createElement("div");
+			wrapperDiv.className = "field-wrapper";
+
+			const input = document.createElement("input");
+			input.type = "text";
+			input.id = id+"Input";
+			wrapperDiv.appendChild(input);
+
+			const sugBox = document.createElement("div");
+			sugBox.className = "suggestions-box";
+			sugBox.id = id+"Suggestions";
+			wrapperDiv.appendChild(sugBox);
+
+			wrapper.appendChild(wrapperDiv);
+
+			function updateSuggestions() {
+				if (typeof diary !== "undefined") {
+					const val = input.value.trim().toLowerCase();
+					const allValues = diary.map(d => d[id]).filter(v => v && v !== "");
+
+					// lọc theo chữ đang nhập
+					const filtered = allValues.filter(v => v.toLowerCase().includes(val));
+
+					// sắp xếp: vị trí khớp trước, nếu bằng nhau thì alphabet
+					const sorted = filtered.sort((a, b) => {
+						const aLower = a.toLowerCase();
+						const bLower = b.toLowerCase();
+						const aPos = aLower.indexOf(val);
+						const bPos = bLower.indexOf(val);
+
+						if (aPos !== bPos) {
+							return aPos - bPos; // vị trí nhỏ hơn ưu tiên hơn
+						}
+						return aLower.localeCompare(bLower); // nếu bằng nhau thì alphabet
+					});
+
+					// lấy 2 gợi ý đầu tiên
+					const recent = [...new Set(sorted.slice(0, 2))];
+
+					// render popup
+					sugBox.innerHTML = "";
+					if (recent.length > 0) {
+						recent.forEach(s => {
+							const opt = document.createElement("div");
+							opt.textContent = s;
+							opt.style.padding = "6px 8px";
+							opt.style.cursor = "pointer";
+							opt.addEventListener("click", () => {
+								input.value = s;
+								sugBox.style.display = "none";
+							});
+							sugBox.appendChild(opt);
+						});
+						sugBox.style.display = "block";
+					} else {
+						sugBox.style.display = "none";
+					}
+				}
+			}
+
+
+			input.addEventListener("input", updateSuggestions);
+			input.addEventListener("blur", () => { setTimeout(()=>sugBox.style.display="none",200); });
+		}
+	
+		return wrapper;
+	}
+
+	// dựng toàn bộ form
+	const resultDiv = document.getElementById("result");
+	for (const id in datasets) {
+		resultDiv.appendChild(buildField(id));
+	}
+
+	// hàm Apply
+	document.getElementById("apply").addEventListener("click", () => {
+		let date = document.getElementById("dateInput").value || new Date().toISOString().split("T")[0];
+		const obj = { date };
+
+		for (const id in datasets) {
+			const meta = datasets[id].meta;
+			if (meta.type === "btn") {
+				const activeBtns = document.querySelectorAll(`#${id} button.active`);
+				if (activeBtns.length === 0) { alert("Bạn chưa chọn "+id); return; }
+				obj[id] = meta.multi ? [...activeBtns].map(b => b.id) : activeBtns[0].id;
+			} else if (meta.type === "number") {
+				let val = parseFloat(document.getElementById(id+"Input").value);
+				if (isNaN(val)) val = 0;
+				obj[id+"Amount"] = val;
+
+				// nếu có range thì tính rank
+				let chosen = null;
+				for (const key in datasets[id]) {
+					if (key === "meta") continue;
+					const range = datasets[id][key].range;
+					if (range && val >= range[0] && val <= range[1]) {
+						chosen = key;
+						break;
+					}
+				}
+				obj[id] = chosen || null;
+			} else if (meta.type === "text") {
+				obj[id] = document.getElementById(id+"Input").value.trim();
+			}
 		}
 
-
-		document.getElementById("apply").addEventListener("click", () => {
-			let date = document.getElementById("dateInput").value;
-			if (!date) {
-				const today = new Date();
-				const yyyy = today.getFullYear();
-				const mm = String(today.getMonth()+1).padStart(2,"0");
-				const dd = String(today.getDate()).padStart(2,"0");
-				date = `${yyyy}-${mm}-${dd}`;
-			}
-
-			const obj = {date};
-			for (const key in datasets) {
-				const val = document.getElementById(key).value;
-				if (!val) {
-					alert("Bạn chưa chọn " + key + "!");
-					return;
+		// xuất chuỗi log
+		let result = `{ date:"${obj.date}"`;
+		for (const id in datasets) {
+			const meta = datasets[id].meta;
+			if (meta.type === "btn") {
+				if (meta.multi) {
+					result += `, ${id}:[${obj[id].map(v => `"${v}"`).join(",")}]`;
+				} else {
+					result += `, ${id}:"${obj[id]}"`;
 				}
-				obj[key] = val;
+			} else if (meta.type === "number") {
+				result += `, ${id}:"${obj[id]}", ${id}Amount:${obj[id+"Amount"]}`;
+			} else if (meta.type === "text") {
+				result += `, ${id}:"${obj[id]}"`;
 			}
+		}
+		result += " }";
+		document.getElementById("output").value = result;
+	});
+</script>
 
-			// Tự ghép chuỗi theo format yêu cầu
-			let result = "{ ";
-			result += `date: "${obj.date}"`;
-			for (const key in datasets) {
-				result += `, ${key}: "${obj[key]}"`;
-			}
-			result += " }";
-
-			document.getElementById("output").value = result;
-		});
-
-
-	</script>
 </body>
 </html>

@@ -1,29 +1,33 @@
-* {font-family: monospace; margin:0;padding:0;box-sizing:border-box;}
+* {font-family: monospace; margin:0;padding:0;box-sizing:border-box;font-size: 1.7vh;}
 .notebook{
 	width:80vw;
-	height:90vh;
+	height:95vh;
 	border:2px solid #8b5e3c;
 	background:#fff;
 	box-shadow:5px 5px 15px rgba(0,0,0,0.2);
 	position:relative;
 	box-sizing: border-box;
-	margin: 5vh 10vw;
+	margin: 2.5vh 10vw;
 }
 .page {
-	padding:2vh 2vw;
-	display:none;
-	height:100%;
+    padding: 0 2vw;
+    padding-top: 5vh;
+    display: none;
+    height: 100%;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
 }
 .page.active {
 	display:flex;
 }
 .tabs {
-	position:absolute;
-	right:-9vw;
-	top:-2px; /* căn trên cùng */
-	display:flex;
-	flex-direction:column;
-	gap:1vh;
+    position: absolute;
+    right: -9vw;
+    top: -2px;
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
 }
 .tab {
 	line-height:5vh;
@@ -51,14 +55,17 @@
 	width: 75%;
 	justify-content: center;
 }
+.day .calendar{
+	width: 100%;
+}
 .row {
 	display: flex;
 }
 .row div{
 	box-sizing: border-box;
-	height: 2.5vh;
+	height: 2.7vh;
 	width: 5vw;
-	line-height: 2.5vh;
+	line-height: 2.7vh;
 }
 .corner-cell {
 	visibility: hidden; /* ô trống góc */
@@ -75,7 +82,6 @@
 	justify-content: center;
 	border: 0.5px dashed rgba(0,0,0,0.1);
 	background: #fff;
-	font-size: 12px;
 	position: relative;
 }
 .cell:hover {
@@ -127,11 +133,102 @@
     font-family: monospace;   /* font chữ đều nhau */
     white-space: pre;         /* giữ nguyên tab/khoảng trắng */
 }
-
 #info {
 	margin-top: 10px;
 	text-align: center;
-	font-size: 16px;
 	font-weight: bold;
 	width: 100%;
 }
+.selector{
+	display: flex;
+	position: absolute;
+	width: 75%;
+	top: 0;
+	height: 5vh;
+	box-sizing: border-box;
+}
+.prev{
+	
+}
+.dayinput{
+	
+}
+.next{
+	
+}
+
+.day-row {
+	display: flex;
+	height: 2.7vh;
+	border-bottom: 0.1vh dashed #ccc;
+	box-sizing: border-box;
+	cursor: pointer;
+	position: relative;
+}
+.day-label {
+	width: 5vw;
+	font-weight: bold;
+	line-height: 2.5vh;
+	cursor: pointer;
+}
+.day-values {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+}
+.emoji-box {
+	display: inline-block;
+	padding: 0.2vh 1vw;
+	margin: 0 0.1vw;
+	line-height: 2.1vh;
+	border-radius: 10%;
+	background: #f9f9f9;
+}
+.day-txt{
+	display: none;
+}
+.day-row:hover{
+	background-color: rgba(0,0,0,0.05);
+}
+.day-row:hover .emoji-box, .day-label:hover ~ .day-values .emoji-box  {
+  display: none; /* hover thì emoji ẩn */
+}
+.day-row:hover .day-txt, .day-label:hover ~ .day-values .day-txt  {
+	display: inline-block; /* hover thì text hiện */
+	padding: 0.2vh 0;
+	line-height: 2.1vh;
+}
+
+.day-text {
+  white-space: nowrap;        /* ép text nằm trên 1 dòng */
+  overflow: hidden;           /* ẩn phần vượt quá */
+  text-overflow: ellipsis;    /* thêm dấu ... khi bị cắt */
+  max-width: 66vw;           /* giới hạn chiều rộng hiển thị */
+}
+.popover {
+  position: absolute;
+  display: none;
+  max-width: 80%;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 1vw;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 1000;
+  bottom: 3.2vh; /* mặc định nhảy lên */
+  left: 10%;
+  filter: brightness(1.2); /* sáng hơn */
+}
+
+/* hover thì hiện popup */
+.day-row:hover .popover {
+  display: block;
+}
+
+/* nếu ngày < 5 thì popup nhảy xuống */
+.day-row.early .popover {
+  top: 3.2vh;
+}
+
+
+

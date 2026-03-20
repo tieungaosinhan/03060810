@@ -21,5 +21,4 @@ const quotes = [	{quote:`Faith, as well intentioned as it may be, must be built 
 {quote:`Love is an act of endless forgiveness, a tender look which becomes a habit.`,author:`Peter Ustinov`},
 {quote:`No one has ever become poor by giving.`,author:`Anne Frank`},
 {quote:`For in the dew of little things the heart finds its morning and is refreshed.`,author:`Khalil Gibran`},
-
 ];

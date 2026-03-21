@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="notebook.css">
 </head>
 <body>
+
 	<div class="notebook" id="app">
 
 		<div class="tabs" id="tabs"></div>
@@ -14,7 +15,18 @@
 <script src="notebook.js"></script>
 <script>
 	const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
-
+function checkOrientation() {
+  const overlay = document.getElementById("overlay");
+  if (window.innerHeight > window.innerWidth) {
+    // portrait → chặn
+    overlay.classList.add("active");
+  } else {
+    // landscape → cho xài
+    overlay.classList.remove("active");
+  }
+}
+window.addEventListener("resize", checkOrientation);
+checkOrientation();
 	// Hàm lấy ngày/tháng/năm hiện tại theo local timezone
 	let thisyear, thismonth, thisday, today;
 	const now = new Date();

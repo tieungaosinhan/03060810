@@ -1349,6 +1349,15 @@
 			qa: [
 				{ q: `Daily `, a: `last`, s:`Reversed` }
 			]
+		},
+		{
+			date: `2026-03-21`,
+			key: `20260321000`,
+			title: `Daily`,
+			details: `A real friend is one who walks in when the rest of the world walks out.<br>Walter Winchell<br> <br>Lá Last Quarter Moon ngược là biểu tượng của sự trì hoãn điều chỉnh, kháng cự buông bỏ, và bám víu vào điều đã cũ. Đây là thời điểm bạn có thể đang né tránh việc nhìn lại hành trình, hoặc chưa sẵn sàng từ bỏ những gì không còn phù hợp — dù trái tim đã lên tiếng.<br>---<br>🌫️ Tổng quan năng lượng<br>- Trì hoãn việc đánh giá lại: Bạn biết mình cần xem lại hướng đi, nhưng lại tránh né vì sợ phải thay đổi.<br>- Bám víu vào điều cũ: Có thể là một thói quen, một mối quan hệ, hoặc một niềm tin — bạn giữ lại vì quen thuộc, không phải vì nó còn nuôi dưỡng bạn.<br>- Kháng cự sự điều chỉnh cần thiết: Bạn đang cố giữ nguyên mọi thứ — dù bên trong đã có sự xáo trộn.<br>---<br>💼 Trong công việc<br>- Ngại thay đổi chiến lược hoặc quy trình: Bạn có thể đang tiếp tục một cách làm cũ — dù biết rằng nó không còn hiệu quả.<br>- Thiếu sự linh hoạt: Bạn đang cố ép mình vào một khuôn mẫu — thay vì điều chỉnh theo thực tế.<br>- Lời khuyên: Hãy dũng cảm nhìn lại — điều chỉnh không phải là thất bại, mà là trưởng thành.<br>---<br>💰 Tài chính<br>- Bám vào khoản đầu tư hoặc cách chi tiêu không còn phù hợp: Bạn giữ lại vì tiếc — không phải vì nó còn sinh lời.<br>- Trì hoãn việc tái cấu trúc tài chính: Bạn biết cần thay đổi, nhưng chưa dám hành động.<br>- Lời nhắn: Hãy xem lại dòng tiền — và đừng ngại cắt bỏ để tạo không gian cho sự thịnh vượng mới.<br>---<br>❤️ Tình yêu<br>- Chưa sẵn sàng buông bỏ kỳ vọng cũ: Bạn có thể đang giữ hình ảnh cũ về người kia — hoặc về chính mình trong mối quan hệ.<br>- Ngại điều chỉnh kết nối: Bạn biết cần thay đổi cách yêu, cách giao tiếp — nhưng chưa dám thử.<br>- Lời khuyên: Hãy trò chuyện thẳng thắn — sự thật có thể đau, nhưng im lặng còn đau hơn.<br>---<br>🧘‍♀️ Tinh thần & phát triển cá nhân<br>- Trì hoãn việc thanh lọc nội tâm: Bạn đang giữ lại những niềm tin, thói quen, hoặc cảm xúc không còn phục vụ mình.<br>- Mất kết nối với chu kỳ tự nhiên của bản thân: Bạn đang cố giữ nguyên — thay vì chấp nhận rằng mọi thứ đều cần được điều chỉnh theo thời gian.<br>- Lời nhắn: Buông bỏ không phải là mất — mà là tạo không gian cho điều mới.<br>---<br>Last Quarter Moon ngược thì thầm:<br>> Bạn không thể bước tiếp nếu cứ mang theo hành lý đã quá nặng — hãy chọn lọc với lòng biết ơn.`,
+			qa: [
+				{ q: `Daily `, a: `last`, s:`Reversed` }
+			]
 		},		
 	];
 

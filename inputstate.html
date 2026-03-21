@@ -4,61 +4,86 @@
 	<meta charset="UTF-8">
 	<title>Diary Form</title>
 	<style>
+		* {font-family: monospace; margin:0;padding:0;box-sizing:border-box;font-size: 1.7vh;line-height: 2.5vh;}
+
+		body{
+			padding: 2vh 2vw;
+			box-sizing: border-box;
+		}
 		.btn-group button {
-			margin: 4px;
-			padding: 6px 10px;
+			margin: 0.1vw;
+			padding: 0 0.5vw;
 			border: 1px solid #ccc;
 			cursor: pointer;
 			background-color: #fff; /* mặc định trắng */
 			color: #000;
+			box-sizing: border-box;
 		}
 		.btn-group button.active {
 			outline: 2px solid #000;
 		}
-/* Khối chứa input và gợi ý */
-.field-wrapper {
-	position: relative; /* để popup định vị theo input */
-	margin-bottom: 20px;
+		/* Khối chứa input và gợi ý */
+		.field-wrapper {
+			position: relative; /* để popup định vị theo input */
+			margin-bottom: 2vh;
+		}
+
+		/* Ô nhập text */
+		.field-wrapper input {
+			width: 100%;
+			padding: 0.2vh 0.5vw;
+			border: 1px solid #ccc;
+		}
+
+		/* Popup gợi ý */
+		.suggestions-box {
+			position: absolute;
+			top: 100%; /* ngay dưới input */
+			left: 0;
+			width: 100%;
+			border: 1px solid #ccc;
+			border-top: none;
+			background: #fff;
+			z-index: 1000;
+			display: none; /* mặc định ẩn */
+			max-height: 30%;
+			overflow-y: auto;
+			box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+		}
+
+		/* Mỗi item gợi ý */
+		.suggestions-box div {
+			padding: 0.2vh 0.5vw;
+			cursor: pointer;
+		}
+
+		/* Hover item */
+		.suggestions-box div:hover {
+			background-color: #f0f0f0;
+		}
+.overlay {
+  position: fixed;
+  inset: 0;              /* phủ toàn bộ màn hình */
+  width: 100%;         /* viewport width */
+  height: 100%;        /* viewport height */
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  display: none;
+  align-items: center;   /* căn giữa theo chiều dọc */
+  justify-content: center; /* căn giữa theo chiều ngang */
+  text-align: center;
+  font-size: 1.5rem;
+  z-index: 9999;
 }
 
-/* Ô nhập text */
-.field-wrapper input[type="text"] {
-	width: 300px;
-	padding: 6px 8px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-}
-
-/* Popup gợi ý */
-.suggestions-box {
-	position: absolute;
-	top: 100%; /* ngay dưới input */
-	left: 0;
-	width: 100%;
-	border: 1px solid #ccc;
-	border-top: none;
-	background: #fff;
-	z-index: 1000;
-	display: none; /* mặc định ẩn */
-	max-height: 120px;
-	overflow-y: auto;
-	box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-/* Mỗi item gợi ý */
-.suggestions-box div {
-	padding: 6px 8px;
-	cursor: pointer;
-}
-
-/* Hover item */
-.suggestions-box div:hover {
-	background-color: #f0f0f0;
+.overlay.active {
+  display: flex;         /* bật flex khi cần */
 }
 
 	</style>
 </head>
 <body>
+<div class="overlay" id="overlay">Xoay ngang xài OK hơn ak</div>
 	<input type="date" id="dateInput">
 	<div id="result"></div>
 	<button id="apply">Apply</button>
@@ -68,6 +93,20 @@
 <script src="diarydata.js"></script>
 <script src="notebook.js"></script>
 <script>
+
+function checkOrientation() {
+  const overlay = document.getElementById("overlay");
+  if (window.innerHeight > window.innerWidth) {
+    // portrait → chặn
+    overlay.classList.add("active");
+  } else {
+    // landscape → cho xài
+    overlay.classList.remove("active");
+  }
+}
+window.addEventListener("resize", checkOrientation);
+checkOrientation();
+
 	function isDarkColor(hex) {
 		hex = hex.replace("#", "");
 		const r = parseInt(hex.substr(0,2),16);
@@ -248,6 +287,8 @@
 		result += " }";
 		document.getElementById("output").value = result;
 	});
+
+
 </script>
 
 </body>

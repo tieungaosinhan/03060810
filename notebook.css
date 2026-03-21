@@ -114,6 +114,7 @@
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
+	overflow: overlay;
 }
 .legend-item {
 	display: flex;
@@ -228,7 +229,28 @@
 /* nếu ngày < 5 thì popup nhảy xuống */
 .day-row.early .popover {
   top: 3.2vh;
+  bottom: auto;
 }
+
+.overlay {
+  position: fixed;
+  inset: 0;              /* phủ toàn bộ màn hình */
+  width: 100%;         /* viewport width */
+  height: 100%;        /* viewport height */
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  display: none;
+  align-items: center;   /* căn giữa theo chiều dọc */
+  justify-content: center; /* căn giữa theo chiều ngang */
+  text-align: center;
+  font-size: 1.5rem;
+  z-index: 9999;
+}
+
+.overlay.active {
+  display: flex;         /* bật flex khi cần */
+}
+
 
 
 

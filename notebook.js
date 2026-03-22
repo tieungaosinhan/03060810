@@ -78,15 +78,22 @@ const datasets = {
 	},
 	quotes: {
 		meta: { label:"Quote hôm nay", type:"text",pg:"day"}
+	},
+	additional: {
+		meta: { label:"Có muốn viết thêm gì không?", type:"text",pg:"day"}
 	}
 };
+
+
+
+
 const diary = [
-	{ date:"2026-03-04", state:"s8", mood:["m1","m4","m7"], health:"h3", weather:"w4", temperature:"t1", minimal:"d2", act:["a1","a2"], spend:"sp1", spendAmount:0, song:"Còn thương rau đắng mọc sau hè - Đan Trường", quotes:"Người nắm tay ta, neo ta nửa đời phiêu bạt, ta hôn mắt người, che người nửa kiếp phân vân" },
-	{ date:"2026-03-19", state:"s3", mood:["m1","m7"], health:"h3", weather:"w1", temperature:"t2", minimal:"d1", act:["a1","a2","a3","a4","a5"], spend:"sp1", spendAmount:0, song:"Nhan sắc - Minh Hằng", quotes:"For in the dew of little things the heart finds its morning and is refreshed. - Khalil Gibran`" },
-	{ date:"2026-03-18", state:"s5", mood:["m4","m7"], health:"h1", weather:"w3", temperature:"t1", minimal:"d2", act:["a1","a2","a3","a4","a5"], spend:"sp1", spendAmount:0, song:"Tôi thấy hoa vàng trên cỏ xanh - Ái Phương", quotes:"And suddenly you know: It's time to start something new and trust the magic of beginnings.And suddenly you know: It's time to start something new and trust the magic of beginnings. - Meister Eckhart`" },
-	{ date:"2026-03-17", state:"s6", mood:["m2","m4","m7"], health:"h5", weather:"w3", temperature:"t2", minimal:"d2", act:["a2","a3"], spend:"sp3", spendAmount:500, song:"Phong nữ + Cô Đôi thượng ngàn - Kiều Anh", quotes:"Every ending is a beginning we do not yet recognize. - T.S. Eliot" },
-	{ date:"2026-03-16", state:"s2", mood:["m1","m4"], health:"h3", weather:"w1", temperature:"t2", minimal:"d1", act:["a1"], spend:"sp1", spendAmount:0, song:"như chưa từng có cuộc chia ly - Ai đó", quotes:"Love is an act of endless forgiveness, a tender look which becomes a habit. - Peter Ustinov`" },
-	{ date:"2026-03-15", state:"s8", mood:["m1","m4","m7"], health:"h3", weather:"w4", temperature:"t1", minimal:"d2", act:["a1","a2"], spend:"sp1", spendAmount:0, song:"Còn thương rau đắng mọc sau hè - Đan Trường", quotes:"Người nắm tay ta, neo ta nửa đời phiêu bạt, ta hôn mắt người, che người nửa kiếp phân vân" },
-	{ date:"2026-03-20", state:"s3", mood:["m10","m13"], health:"h3", weather:"w3", temperature:"t3", minimal:"d2", act:["a2"], spend:"sp3", spendAmount:274057, song:"Phong nữ + Cô Đôi thượng ngàn - Kiều Anh", quotes:"Never doubt that a small group of thoughtful, committed people can change the world. Indeed. It is the only thing that ever has - Margaret Mead" },
+	{ date:"2026-03-04", state:"s8", mood:["m1","m4","m7"], health:"h3", weather:"w4", temperature:"t1", minimal:"d2", act:["a1","a2"], spend:"sp1", spendAmount:0, song:"Còn thương rau đắng mọc sau hè - Đan Trường", quotes:"Người nắm tay ta, neo ta nửa đời phiêu bạt, ta hôn mắt người, che người nửa kiếp phân vân",additional:""},
+	{ date:"2026-03-19", state:"s3", mood:["m1","m7"], health:"h3", weather:"w1", temperature:"t2", minimal:"d1", act:["a1","a2","a3","a4","a5"], spend:"sp1", spendAmount:0, song:"Nhan sắc - Minh Hằng", quotes:"For in the dew of little things the heart finds its morning and is refreshed. - Khalil Gibran`",additional:""},
+	{ date:"2026-03-18", state:"s5", mood:["m4","m7"], health:"h1", weather:"w3", temperature:"t1", minimal:"d2", act:["a1","a2","a3","a4","a5"], spend:"sp1", spendAmount:0, song:"Tôi thấy hoa vàng trên cỏ xanh - Ái Phương", quotes:"And suddenly you know: It's time to start something new and trust the magic of beginnings.And suddenly you know: It's time to start something new and trust the magic of beginnings. - Meister Eckhart`",additional:""},
+	{ date:"2026-03-17", state:"s6", mood:["m2","m4","m7"], health:"h5", weather:"w3", temperature:"t2", minimal:"d2", act:["a2","a3"], spend:"sp3", spendAmount:500, song:"Phong nữ + Cô Đôi thượng ngàn - Kiều Anh", quotes:"Every ending is a beginning we do not yet recognize. - T.S. Eliot",additional:""},
+	{ date:"2026-03-16", state:"s2", mood:["m1","m4"], health:"h3", weather:"w1", temperature:"t2", minimal:"d1", act:["a1"], spend:"sp1", spendAmount:0, song:"như chưa từng có cuộc chia ly - Ai đó", quotes:"Love is an act of endless forgiveness, a tender look which becomes a habit. - Peter Ustinov`",additional:""},
+	{ date:"2026-03-15", state:"s8", mood:["m1","m4","m7"], health:"h3", weather:"w4", temperature:"t1", minimal:"d2", act:["a1","a2"], spend:"sp1", spendAmount:0, song:"Còn thương rau đắng mọc sau hè - Đan Trường", quotes:"Người nắm tay ta, neo ta nửa đời phiêu bạt, ta hôn mắt người, che người nửa kiếp phân vân",additional:""},
+	{ date:"2026-03-20", state:"s3", mood:["m10","m13"], health:"h3", weather:"w3", temperature:"t3", minimal:"d2", act:["a2"], spend:"sp3", spendAmount:274057, song:"Phong nữ + Cô Đôi thượng ngàn - Kiều Anh", quotes:"Never doubt that a small group of thoughtful, committed people can change the world. Indeed. It is the only thing that ever has - Margaret Mead",additional:""},
 ];
 

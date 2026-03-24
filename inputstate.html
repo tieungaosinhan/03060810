@@ -135,6 +135,7 @@ checkOrientation();
 		const wrapper = document.createElement("div");
 		wrapper.id = id;
 		const lbl = document.createElement("div");
+		lbl.classList.add("lbl");
 		lbl.textContent = meta.label;
 		wrapper.appendChild(lbl);
 		data.activeKeys = [];
